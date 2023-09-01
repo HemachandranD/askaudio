@@ -56,8 +56,6 @@ def setup():
 
 def launch_task(task, transcript):
     message = st.chat_message("assistant")
-    custom_prompt= ''
-    custom_submitted= False
 
     if task == "Transcribe :speech_balloon:":
                 message.write("Transcription")
@@ -89,17 +87,16 @@ def launch_task(task, transcript):
                 # Every form must have a submit button.
                 custom_submitted = st.form_submit_button("Submit", type='primary')
 
-    return message, custom_prompt, custom_submitted
-
-def custom_prompt_task(transcript, message, custom_prompt, custom_submitted):
-     if custom_submitted:
-            print('submitted')
-            print(custom_prompt)
-            with st.spinner("Generating the Response..."):
-                custom_request= custom_prompt +' '+ transcript[:100]
-                answer = get_custom_response(request=custom_request)
-            message.write("Hello Human")
-            message.write(answer)
+                if custom_submitted:
+                    print('submitted')
+                    print(custom_prompt)
+                    with st.spinner("Generating the Response..."):
+                        custom_request= custom_prompt +' '+ transcript[:100]
+                        answer = get_custom_response(request=custom_request)
+                    message.write("Hello Human")
+                    message.write(answer)
+                else:
+                   st.write("")
 
 
 def main():
@@ -110,10 +107,7 @@ def main():
             # if submitted and transcript != '':
                 st.toast(f'Your task for {task} is submitted', icon='🚀')
                 time.sleep(.5)
-                message, custom_prompt, custom_submitted=launch_task(task, transcript)
-                #only for custom prompt
-                if task == ':rainbow[Custom] :rocket:':
-                     custom_prompt_task(transcript, message, custom_prompt, custom_submitted)
+                launch_task(task, transcript)
             else:
                  with left:
                     st.write("")

@@ -1,6 +1,6 @@
 import streamlit as st
 import time
-from src.podsum import get_transcribe_audio, get_custom_response
+from src.askaudio import get_transcribe_audio, get_custom_response
 
 st.set_page_config(
     layout="wide",
@@ -86,7 +86,7 @@ def launch_task(task, transcript, custom_prompt):
 
     elif task == ':rainbow[Custom] :rocket:' and custom_prompt!='':
         with st.spinner("Generating the Response..."):
-            oofContext_prompt= "Don’t justify your answers. Don’t give information not mentioned in the request"
+            oofContext_prompt= "Don’t give information not mentioned in the request"
             custom_request= oofContext_prompt+custom_prompt +' '+ transcript[:100]
             answer = get_custom_response(request=custom_request)
         message.write("Hello Human")

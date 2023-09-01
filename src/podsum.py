@@ -17,31 +17,6 @@ def get_transcribe_audio(audio):
         time.sleep(.5)
         return transcript
 
-def get_audio_summary(request):
-      chatOutput= openai.ChatCompletion.create(model="gpt-3.5-turbo-16k",messages=[{
-        "role": "system",
-        "content": "You are a helpful assistant."
-      },
-      {
-        "role": "user",
-        "content": request
-      }])
-      audioSummary = chatOutput.choices[0].message.content
-      return audioSummary
-
-
-def get_audio_highlights(request):
-      chatOutput= openai.ChatCompletion.create(model="gpt-3.5-turbo-16k",messages=[{
-        "role": "system",
-        "content": "You are a helpful assistant."
-      },
-      {
-        "role": "user",
-        "content": request
-      }])
-      audioHighlights = chatOutput.choices[0].message.content
-      return audioHighlights
-
 def get_custom_response(request):
       chatOutput= openai.ChatCompletion.create(model="gpt-3.5-turbo-16k",messages=[{
         "role": "system",

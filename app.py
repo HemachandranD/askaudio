@@ -1,6 +1,6 @@
 import streamlit as st
 import time
-from src.podsum import get_transcribe_audio, get_audio_summary, get_audio_highlights, get_custom_response
+from src.podsum import get_transcribe_audio, get_custom_response
 
 st.set_page_config(
     layout="wide",
@@ -25,6 +25,7 @@ def load_css(file_name):
 
 def setup():
     transcript=''
+    custom_prompt= ''
 
     with left:
         html_temp = """
@@ -49,12 +50,15 @@ def setup():
                 task=st.radio('What would you like me to do?', options=['Transcribe :speech_balloon:', 'Summary :memo:', 'Highlights :chart_with_upwards_trend:', ':rainbow[Custom] :rocket:'], horizontal=False, \
                         captions=["Get the transcription of the complete Audio. ", "Get the Summary of the Transcribed Audio.",\
                                 "Get the Highlights of the Audio.", "Ask questions about the Audio and get the Answers from Powerful GPT."])
+
+                custom_prompt = st.text_input("Enter the message")
+
                 # Every form must have a submit button.
                 submitted = st.form_submit_button("Launch", type='primary')
 
-        return submitted, task, transcript
+        return submitted, task, transcript, custom_prompt
 
-def launch_task(task, transcript):
+def launch_task(task, transcript, custom_prompt):
     message = st.chat_message("assistant")
 
     if task == "Transcribe :speech_balloon:":
@@ -66,7 +70,7 @@ def launch_task(task, transcript):
                 instruction_prompt="Summarize the following"
                 request= instruction_prompt + transcript
                 if 'summary' not in st.session_state:
-                    st.session_state['summary'] = get_audio_summary(request=request)
+                    st.session_state['summary'] = get_custom_response(request=request)
                 summary=st.session_state['summary']
         message.write("Summary")
         message.write(summary)
@@ -75,39 +79,27 @@ def launch_task(task, transcript):
         with st.spinner("Picking up the Highlights..."):
             highlights_request= "Extract the Highlights from the following" + transcript
             if 'highlights' not in st.session_state:
-                    st.session_state['highlights'] = get_audio_highlights(request=highlights_request)
+                    st.session_state['highlights'] = get_custom_response(request=highlights_request)
             highlights=st.session_state['highlights']
         message.write("Audio Highlights")
         message.write(highlights)
 
-    elif task == ':rainbow[Custom] :rocket:':
-
-        with st.form("submit_form"):
-                custom_prompt = st.text_input("Enter the message")
-                # Every form must have a submit button.
-                custom_submitted = st.form_submit_button("Submit", type='primary')
-
-                if custom_submitted:
-                    print('submitted')
-                    print(custom_prompt)
-                    with st.spinner("Generating the Response..."):
-                        custom_request= custom_prompt +' '+ transcript[:100]
-                        answer = get_custom_response(request=custom_request)
-                    message.write("Hello Human")
-                    message.write(answer)
-                else:
-                   st.write("")
-
+    elif task == ':rainbow[Custom] :rocket:' and custom_prompt!='':
+        with st.spinner("Generating the Response..."):
+            oofContext_prompt= "Don’t justify your answers. Don’t give information not mentioned in the request"
+            custom_request= oofContext_prompt+custom_prompt +' '+ transcript[:100]
+            answer = get_custom_response(request=custom_request)
+        message.write("Hello Human")
+        message.write(answer)
 
 def main():
     load_css("src/style.css")
-    submitted, task, transcript = setup()
+    submitted, task, transcript, custom_prompt = setup()
     with right:
-            if submitted :
-            # if submitted and transcript != '':
+            if submitted and transcript != '':
                 st.toast(f'Your task for {task} is submitted', icon='🚀')
                 time.sleep(.5)
-                launch_task(task, transcript)
+                launch_task(task, transcript, custom_prompt)
             else:
                  with left:
                     st.write("")

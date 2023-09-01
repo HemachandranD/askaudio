@@ -86,8 +86,8 @@ def launch_task(task, transcript, custom_prompt):
 
     elif task == ':rainbow[Custom] :rocket:' and custom_prompt!='':
         with st.spinner("Generating the Response..."):
-            oofContext_prompt= "Don’t give information not mentioned in the request"
-            custom_request= oofContext_prompt+custom_prompt +' '+ transcript[:100]
+            oofContext_prompt= "Don’t justify your answers. Don’t give information not mentioned in the request"
+            custom_request= oofContext_prompt +custom_prompt +' in the following content'+ transcript[:100]
             answer = get_custom_response(request=custom_request)
         message.write("Hello Human")
         message.write(answer)

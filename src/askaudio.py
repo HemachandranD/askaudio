@@ -1,11 +1,13 @@
-import openai
 import streamlit as st
 import time
+from openai import OpenAI
+
+client = OpenAI()
 
 
 def get_transcribe_audio(audio):
         with st.spinner("Patience is the key to accurate analysis. Please wait while we process your audio"):
-            transcript = openai.Audio.transcribe(
+            transcript = client.audio.transcribe(
                 file = audio,
                 model = "whisper-1",
                 response_format="text",
